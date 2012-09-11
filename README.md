@@ -1,5 +1,7 @@
-gwt-leaflet
+gwt-leaflet 
 ===========
+
+[![Build Status](https://secure.travis-ci.org/kengu/gwt-leaflet.png)](http://travis-ci.org/kengu/gwt-leaflet)
 
 A __lightweight__ mapping alternative to popular mapping APIs like Google Maps and OpenLayers.
 
@@ -14,20 +16,49 @@ and [Type Overlays](https://developers.google.com/web-toolkit/doc/latest/DevGuid
 Features
 ========
 
-Following Leaflet features are implemented (Java interface names, Leaflet API in brackets):
+**Warning**: This project is in flux. API, module structure and names can change at any time!
 
-+ Map - Primary interface ([L.Map](http://leaflet.cloudmade.com/reference.html#map-class))
-+ LatLng - Position position ([L.LatLng](http://leaflet.cloudmade.com/reference.html#latlng))
-+ Layer - Common layer interface ([ILayer](http://leaflet.cloudmade.com/reference.html#ilayer))
-+ TileLayer - TileCache layer interface ([L.TileLayer](http://leaflet.cloudmade.com/reference.html#tilelayer))
-+ WmsLayer - WMS layer interface ([L.TileLayer.WMS](http://leaflet.cloudmade.com/reference.html#tilelayer-wms))
-+ Control - Common control interface  ([IControl](http://leaflet.cloudmade.com/reference.html#icontrol))
-+ Layers - Layer selector control ([L.Control.Layers](http://leaflet.cloudmade.com/reference.html#control-layers))
-+ Attribution - Attribution control ([L.Control.Attribution](http://leaflet.cloudmade.com/reference.html#control-attribution))
+###<a href="https://github.com/kengu/gwt-leaflet/issues/milestones">Milestones</a>###
 
-In addition, the following Widgets are implemented
++ v0.1 (Medio Sep 2012) - Core parts of Leaflet API exposed
++ v0.2 (Primo Nov 2012) - All relevant parts of Leaflet API exposed, start publishing snapshots (maven + jars)
++ v0.3 (Ultimo Dec 2012) - Widgets: geolocation (field), first official release (maven + jars).
 
-+ MapPane - Primary GWT Widget
+###<a href="src/gwtl-core">Core Module</a>###
+
+**Dependency**: Leaflet 0.4.4
+
+Following parts of Leaflet API are implemented:
+
++ [L.Map](http://leaflet.cloudmade.com/reference.html#map-class) - Leaflet Map class (partial)
++ [ILayer](http://leaflet.cloudmade.com/reference.html#ilayer) - Common layer interface
++ [L.TileLayer](http://leaflet.cloudmade.com/reference.html#tilelayer) - Common Tile layer class
++ [L.TileLayer.WMS](http://leaflet.cloudmade.com/reference.html#tilelayer-wms) - WMS layer class 
++ [IControl](http://leaflet.cloudmade.com/reference.html#icontrol) - Common control interface
++ [L.Control.Layers](http://leaflet.cloudmade.com/reference.html#control-layers) - Layer switcher control class
++ [L.Control.Attribution](http://leaflet.cloudmade.com/reference.html#control-attribution) - Map and layer attribution class
++ [L.Control.Scale](http://leaflet.cloudmade.com/reference.html#control-scale) - Simple legend control class
++ [L.Control.Zoom](http://leaflet.cloudmade.com/reference.html#control-zoom) - Simple zoom control class
++ [L.Point](http://leaflet.cloudmade.com/reference.html#point) - Map point (coordinates in pixels)
++ [L.LatLng](http://leaflet.cloudmade.com/reference.html#latlng) - Geographical point
++ [L.Transformation](http://leaflet.cloudmade.com/reference.html#transformation) - Affine transformation
++ [ICRS](http://leaflet.cloudmade.com/reference.html#icrs) - Coordinate reference system interface
++ [L.CRS](http://leaflet.cloudmade.com/reference.html#icrs) - Base CRS class
++ [L.CRS.EPSG3395](http://leaflet.cloudmade.com/reference.html#icrs) - [EPSG:3395](http://spatialreference.org/ref/epsg/3395/)
++ [L.CRS.EPSG3857](http://leaflet.cloudmade.com/reference.html#icrs) - [EPSG:3857](http://spatialreference.org/ref/epsg/3857/)
++ [L.CRS.EPSG4326](http://leaflet.cloudmade.com/reference.html#icrs) - [EPSG:4326](http://spatialreference.org/ref/epsg/4326/)
++ [L.CRS.Simple](http://leaflet.cloudmade.com/reference.html#icrs) - Simple CRS (lat and lng into x and y directly)
+
+###<a href="src/gwtl-widget">Widget Module (GWT)</a>###
+
++ MapWidget - GWT Widget displaying a Map instance (available from WindowBuilder Editor palette)
+            
+###<a href="src/gwtl-proj4">Proj4 Module (GWT)</a>###
+
+**Dependency**: Proj4Leaflet [master/74a5a8b170ff58e635cba139cfaa25cd4cd5d022](https://github.com/kengu/Proj4Leaflet/commit/74a5a8b170ff58e635cba139cfaa25cd4cd5d022) (git)
+                                    
+
++ Proj4 - Custom (local) CRS factory plugin to Leaflet ([Proj4Leaflet](https://github.com/kartena/Proj4Leaflet))
 
 Example
 =======

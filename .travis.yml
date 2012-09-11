@@ -1,0 +1,14 @@
+language: java
+jdk:
+  - openjdk7
+
+before_script:
+  - cd src/
+
+script: mvn package -Drelease
+
+notifications:
+  email:
+    recipients:
+      - kenneth.gulbrandsoy@gmail.com
+

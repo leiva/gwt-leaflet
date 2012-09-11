@@ -14,28 +14,40 @@
 	<artifactId>gwtl-core</artifactId>
 	<packaging>jar</packaging>
 	<name>gwtl-core</name>
+	<url>http://www.discotools.org</url>
+
+	<!-- gwtl-core properties -->
+	<properties>
+		<!-- www.leaflet.org script version: "relative/path/to/"leaflet.js -->
+		<version.leaflet>origin/master/</version.leaflet>
+	</properties>
+
+	<!-- Profiles -->
+	<profiles>
+		<profile>
+			<id>debug</id>
+			<properties>
+				<version.leaflet.js>${version.leaflet}/leaflet-src.js</version.leaflet.js>
+			</properties>
+		</profile>
+		<profile>
+			<id>release</id>
+			<properties>
+				<version.leaflet.js>${version.leaflet}/leaflet.js</version.leaflet.js>
+			</properties>
+		</profile>
+	</profiles>
 
 	<dependencies>
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-servlet</artifactId>
-			<scope>runtime</scope>
-		</dependency>
+
+		<!-- Google Web Toolkit -->
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-user</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-dev</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
+
+		<!-- Validation -->
 		<dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
@@ -47,6 +59,14 @@
 			<classifier>sources</classifier>
 			<scope>provided</scope>
 		</dependency>
+
+		<!-- Testing -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
 	</dependencies>
 
 	<build>
@@ -63,19 +83,17 @@
 					<execution>
 						<goals>
 							<goal>resources</goal>
-							<goal>generateAsync</goal>
 						</goals>
 					</execution>
 				</executions>
 				<configuration>
 					<!-- Ask GWT to create the Story of Your Compile (SOYC) (gwt:compile) -->
-					<compileReport>true</compileReport>
-					<module>org.gwt.leaflet.Leaflet</module>
-					<logLevel>INFO</logLevel>
-					<style>PRETTY</style>
-					<draftCompile>true</draftCompile>
-					<optimizationLevel>1</optimizationLevel>
-					<hostedWebapp>${project.build.directory}/${project.build.finalName}</hostedWebapp>
+					<compileReport>${compile.report}</compileReport>
+					<!-- Other compilation settings -->
+					<style>${compile.style}</style>
+					<logLevel>${compile.level}</logLevel>
+					<draftCompile>${compile.draft}</draftCompile>
+					<optimizationLevel>${compile.optimization.level}</optimizationLevel>
 				</configuration>
 			</plugin>
 
@@ -99,7 +117,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
 		</plugins>
 	</build>
 </project>
