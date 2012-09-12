@@ -1,4 +1,6 @@
-package org.gwt.leaflet.client.crs;
+package org.gwt.leaflet.client.crs.epsg;
+
+import org.gwt.leaflet.client.crs.CRS;
 
 
 /**
@@ -14,8 +16,10 @@ package org.gwt.leaflet.client.crs;
 public final class Simple extends CRS {
 
 	/**
-	 * EPSG4326 overlay type constructor. 
+	 * Simple overlay type constructor. 
 	 */
-	protected Simple() { }
+	public Simple() {
+		super(CRS.SIMPLE);
+	}
 	
 }

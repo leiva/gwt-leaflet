@@ -18,11 +18,16 @@ import org.gwt.leaflet.client.controls.Position;
 import org.gwt.leaflet.client.controls.layers.Layers;
 import org.gwt.leaflet.client.controls.scale.Scale;
 import org.gwt.leaflet.client.controls.zoom.Zoom;
+import org.gwt.leaflet.client.crs.epsg.EPSG3395;
+import org.gwt.leaflet.client.crs.epsg.EPSG3857;
+import org.gwt.leaflet.client.crs.epsg.EPSG4326;
+import org.gwt.leaflet.client.crs.epsg.Simple;
 import org.gwt.leaflet.client.layers.others.LayerGroup;
 import org.gwt.leaflet.client.layers.raster.TileLayer;
 import org.gwt.leaflet.client.layers.raster.WmsLayer;
 import org.gwt.leaflet.client.layers.vector.Circle;
 import org.gwt.leaflet.client.layers.vector.Polyline;
+import org.gwt.leaflet.client.layers.vector.Rectangle;
 import org.gwt.leaflet.client.map.Map;
 import org.gwt.leaflet.client.marker.Marker;
 import org.gwt.leaflet.client.options.ControlOptions;
@@ -31,6 +36,7 @@ import org.gwt.leaflet.client.options.Options;
 import org.gwt.leaflet.client.options.ScaleControlOptions;
 import org.gwt.leaflet.client.options.ZoomControlOptions;
 import org.gwt.leaflet.client.types.LatLng;
+import org.gwt.leaflet.client.types.LatLngBounds;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -82,8 +88,11 @@ public class Example implements EntryPoint {
 		wmsOptions.setProperty("layers", "Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade");
 		wmsOptions.setProperty("attribution", "Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade");
 		// Required version: origin/master
-		//crs = L.crs().create(CRS.EPSG4326);
-		//wmsOptions.setProperty("crs", crs);
+		EPSG3395 vCRS_EPSG3395 = new EPSG3395();
+		EPSG4326 vCRS_EPSG4326 = new EPSG4326();
+		EPSG3857 vCRS_EPSG3857 = new EPSG3857();
+		//Simple   vCRS_Simple   = new Simple(); 
+		wmsOptions.setProperty("crs", vCRS_EPSG3395);
 	
 		// Create Leaflet WMSLayer instance
 		WmsLayer wms = new WmsLayer(url, wmsOptions);
@@ -103,12 +112,20 @@ public class Example implements EntryPoint {
 		// LayerGroup
 		LatLng glatlng1 = new LatLng(59.920, 10.754);
 		LatLng glatlng2 = new LatLng(59.922, 10.750);
+		LatLng glatlng3 = new LatLng(59.924, 10.752);
+		LatLng glatlng4 = new LatLng(59.926, 10.756);
 		Marker marker1 = new Marker(glatlng1,new Options());
 		Marker marker2 = new Marker(glatlng2,new Options());
+		Marker marker3 = new Marker(glatlng3,new Options());
+		Marker marker4 = new Marker(glatlng4,new Options());
 
 		Marker[] markers = new Marker[] {marker1, marker2};
 		LayerGroup groupMarkers = new LayerGroup(markers);
-		overlays.setProperty("Group marker", groupMarkers);
+
+		Marker[] markers2 = new Marker[] {marker3, marker4};
+		LayerGroup groupMarkers2 = new LayerGroup(markers2);
+		overlays.setProperty("Group marker 1", groupMarkers);
+		overlays.setProperty("Group marker 2", groupMarkers2);
 		
 		// Add layers control to map 
 		Layers control = new Layers(bases,overlays, controlOptions);
@@ -139,8 +156,16 @@ public class Example implements EntryPoint {
 		circleOptions.setProperty("color", "red");
 		Circle circle = new Circle(latlng,200,circleOptions);
 		circle.addTo(map);
-		
 
+		// Rectangle
+		LatLng rec1 = new LatLng(59.900, 10.705);
+		LatLng rec2 = new LatLng(59.910, 10.710);
+		LatLng[] recs = new LatLng[] {rec1, rec2};
+		LatLngBounds bounds = new LatLngBounds(recs);
+		Rectangle rec = new Rectangle(bounds, new Options());
+		rec.addTo(map);
+		//map.fitBounds(bounds);
+		
 		// Add scale 
 		ScaleControlOptions scaleOptions = new ScaleControlOptions();
 		Scale scale = new Scale(scaleOptions);
