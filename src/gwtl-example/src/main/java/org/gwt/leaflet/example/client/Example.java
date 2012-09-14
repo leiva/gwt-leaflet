@@ -53,7 +53,8 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class Example implements EntryPoint {
 		
-	private Map map;
+	Map map;
+	GeoJSON geoChoropleth;
 
 	public void onModuleLoad() {
 	
@@ -117,11 +118,17 @@ public class Example implements EntryPoint {
 		ControlOptions controlOptions = new ControlOptions(); 
 		controlOptions.setPosition(Position.BOTTOM_RIGHT);
 
+		// Add Choropleth
+		GWT.log("Choropleth");
+		createChoropleth();
+				
+				
 		// LayerGroup
 		LatLng glatlng1 = new LatLng(59.920, 10.754);
 		LatLng glatlng2 = new LatLng(59.922, 10.750);
 		LatLng glatlng3 = new LatLng(59.924, 10.752);
 		LatLng glatlng4 = new LatLng(59.926, 10.756);
+		
 		
 		MarkerOptions opt1 = new MarkerOptions();
 		opt1.setTitle("marker1");
@@ -143,6 +150,7 @@ public class Example implements EntryPoint {
 		LayerGroup groupMarkers2 = new LayerGroup(markers2);
 		overlays.setProperty("Group marker 1", groupMarkers1);
 		overlays.setProperty("Group marker 2", groupMarkers2);
+		overlays.setProperty("Choropleth    ", geoChoropleth);
 		
 		// Add layers control to map 
 		Layers control = new Layers(bases,overlays, controlOptions);
@@ -199,24 +207,22 @@ public class Example implements EntryPoint {
 		Zoom zoom = new Zoom(zoomOptions);
 		zoom.addTo(map);
 		
-		// Add Search Control
-		GWT.log("Search Control");
-		SearchControlOptions searchOptions = new SearchControlOptions();
-		searchOptions.setSearchLayer(groupMarkers1); 
-		searchOptions.setZoom(15); 
-		searchOptions.setText("Search Area"); 
-		searchOptions.setTextErr("Not found"); 
-		searchOptions.setPosition(Position.TOP_RIGHT);
-		Search search = new Search(searchOptions);
-		search.addTo(map);
-		
 		// Add GEOJson
 		GWT.log("GeoJson");
 		createJsonSamples();
-		
-		// Add Choropleth
-		GWT.log("Choropleth");
-		createChoropleth();
+
+		// Add Search Control
+				GWT.log("Search Control");
+				SearchControlOptions searchOptions = new SearchControlOptions();
+				searchOptions.setSearchLayer(groupMarkers1); 
+				searchOptions.setZoom(15); 
+				searchOptions.setSearchLayerProp("title");
+				searchOptions.setText("Search Area"); 
+				searchOptions.setTextErr("Not found"); 
+				searchOptions.setPosition(Position.TOP_RIGHT);
+				Search search = new Search(searchOptions);
+				search.addTo(map);
+				
 	} 
 	
 	public void createJsonSamples() {
@@ -317,13 +323,12 @@ public class Example implements EntryPoint {
 	}
 	
 	public static native JSObject myOnEachFeature(JSObject feature, JSObject layer) /*-{
-   	var popupContent = "<p> <b>myOnEachFeature</b> " +
-				feature.geometry.type + ", but now I'm a Leaflet vector!</p>";
+   	var popupContent = "<p> <b>myOnEachFeature</b> " + 
+				feature.geometry.type + ", but now I'm a Leaflet vector!</p>" + feature.properties.name;
 
 		if (feature.properties && feature.properties.popupContent) {
 			popupContent += feature.properties.popupContent;
 		}
-
 		layer.bindPopup(popupContent);
 		return layer;
 }-*/;
@@ -338,7 +343,37 @@ public class Example implements EntryPoint {
 
 		layer.bindPopup(popupContent);
 		return layer;
-}-*/;
+	}-*/;
+	
+	public static native JSObject myOnEachFeature3(JSObject feature, JSObject layer) /*-{
+			   layer.on({
+			        mouseover: function(e) {
+											layer.setStyle({
+												weight: 5,
+												color: '#666',
+												dashArray: '',
+												fillOpacity: 0.7
+											});
+								
+											if (!L.Browser.ie && !L.Browser.opera) {
+												layer.bringToFront();
+											}
+								
+										},
+			        mouseout: function(e) {
+			        	var geojson = this.@org.gwt.leaflet.example.client.Example::geoChoropleth;
+			        	alert(geojson+" "+e);
+					  	geojson.resetStyle(e.target); 
+						  		}
+				//		  		,
+			    //    click: function(e) {
+			    //    	var map = this.@org.gwt.leaflet.example.client.Example::map;
+				//			map.fitBounds(e.target.getBounds());
+				//						}
+			    });
+			    return null;
+	}-*/;
+	
 
 	public static native JSObject myPointToLayer(JSObject feature, JSObject latlng) /*-{
 			return $wnd.L.circleMarker(latlng, {
@@ -347,12 +382,35 @@ public class Example implements EntryPoint {
 				color: "#000",
 				weight: 1,
 				opacity: 1,
-				fillOpacity: 0.8
+				fillOpacity: 0.8,
+				name : feature.properties.name
 			});
 	}-*/;
 	
 	public static native JSObject myStyle(JSObject feature) /*-{
 		return feature.properties && feature.properties.style;
+	}-*/;
+	
+	public static native JSObject myStyleFr(JSObject feature) /*-{
+	return {	
+		fillColor: @org.gwt.leaflet.example.client.Example::getColor(I)(feature.properties.ID_GEOFLA),	
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '3',
+        fillOpacity: 0.7
+    };
+	}-*/;
+	
+	public static native String getColor(int d) /*-{
+	    return d > 70 ? '#800026' :
+	           d > 60  ? '#BD0026' :
+	           d > 50  ? '#E31A1C' :
+	           d > 40  ? '#FC4E2A' :
+	           d > 30   ? '#FD8D3C' :
+	           d > 20   ? '#FEB24C' :
+	           d > 10   ? '#FED976' :
+	                      '#FFEDA0';
 	}-*/;
 	
 	public static native boolean myFilter(JSObject feature, JSObject layer) /*-{
@@ -368,13 +426,12 @@ public class Example implements EntryPoint {
 	 * From : http://leaflet.cloudmade.com/examples/choropleth-example.html
 	 ***********************************************************************/
 	public void createChoropleth() {
-		String                states       = GeoJsonSampleFactory.getInstance().createUSStates();
+		String                states       = GeoJsonSampleFactory.getInstance().createDepartFrance();
 		GeoJsonFeatures choroplethFeatures = new GeoJsonFeatures() {
 			
 			@Override
 			public JSObject style(JSObject feature) {
-				// TODO Auto-generated method stub
-				return null;
+				return myStyleFr(feature);
 			}
 			
 			@Override
@@ -386,7 +443,7 @@ public class Example implements EntryPoint {
 			@Override
 			public JSObject onEachFeature(JSObject feature, JSObject layer) {
 				// TODO Auto-generated method stub
-				return myOnEachFeature(feature, layer);
+				return myOnEachFeature3(feature, layer);
 			}
 			
 			@Override
@@ -395,8 +452,8 @@ public class Example implements EntryPoint {
 			}
 		};
 		GeoJsonOptions choroplethOptions = new GeoJsonOptions(choroplethFeatures);
-		GeoJSON geojson = new GeoJSON(states,choroplethOptions);
-		geojson.addTo(map);
+		geoChoropleth = new GeoJSON(states,choroplethOptions);
+		geoChoropleth.addTo(map);
 		
 	}
 }
